@@ -78,4 +78,50 @@ class TagManagerPlugin extends BasePlugin
             'tagmanager/(?P<groupHandle>{handle})/(?P<tagId>\d+)' => array('action' => 'tagManager/editTag'),
         );
     }
+
+    /**
+     * Allow Pimp My Matrix to be configured from the tag group field layouts
+     *
+     * @return array
+     */
+    public function loadPimpMyMatrixConfigurator()
+    {
+
+        $segments = craft()->request->getSegments();
+
+        if ( count($segments) == 3
+             && $segments[0] == 'settings'
+             && $segments[1] == 'tags'
+             && $segments[2] != 'new'
+           )
+        {
+            return array(
+                'container' => '#fieldlayoutform',
+                'context' => 'taggroup:'.$segments[2]
+            );
+        }
+
+    }
+
+    /**
+     * Allow Pimp My Matrix to run on the edit pages
+     *
+     * @return string
+     */
+    public function loadPimpMyMatrixFieldManipulator()
+    {
+
+      $segments = craft()->request->getSegments();
+
+      if ( count($segments) == 3 && $segments[0] == 'tagmanager' )
+      {
+        $tagGroup = craft()->tags->getTagGroupByHandle($segments[1]);
+        if ($tagGroup)
+        {
+          return 'taggroup:'.$tagGroup->id;
+        }
+      }
+
+    }
+
 }
